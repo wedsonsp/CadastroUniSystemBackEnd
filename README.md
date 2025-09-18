@@ -41,9 +41,22 @@ Sistemaws/
 
 ### Pré-requisitos
 - .NET 8 SDK
-- SQL Server (LocalDB ou Express)
+- Docker Desktop (para execução com containers)
+- SQL Server (LocalDB ou Express) - apenas para execução local
 
-### Executar Web API
+### 🐳 Executar com Docker (Recomendado)
+```bash
+# Construir e executar containers
+docker-compose up --build
+
+# Executar em background
+docker-compose up -d --build
+
+# Parar containers
+docker-compose down
+```
+
+### 💻 Executar Localmente
 ```bash
 # Navegar para o projeto Web API
 cd Sistemaws.WebApi
@@ -56,22 +69,32 @@ dotnet run
 ```
 
 ### Acessar a API
-- **Web API**: `http://localhost:7201`
-- **📚 Swagger UI**: `http://localhost:7201/swagger` - Documentação interativa completa
-- **🔧 Swagger JSON**: `http://localhost:7201/swagger/v1/swagger.json` - Especificação OpenAPI
+- **Web API**: `http://localhost:7071` (Docker) ou `http://localhost:7201` (Local)
+- **📚 Swagger UI**: `http://localhost:7071/swagger` (Docker) ou `http://localhost:7201/swagger` (Local)
+- **🔧 Swagger JSON**: `http://localhost:7071/swagger/v1/swagger.json` (Docker) ou `http://localhost:7201/swagger/v1/swagger.json` (Local)
+
+### 🐳 Configuração Docker
+O projeto inclui `docker-compose.yml` que configura:
+- **API Container**: Porta 7071
+- **SQL Server Container**: Porta 1433
+- **Banco de dados**: UniSystem (criado automaticamente)
+- **Migrações**: Aplicadas automaticamente na inicialização
 
 ## 🔐 Regras de Negócio e Endpoints
 
-### **Arquitetura de Autenticação Simplificada**
+### **Arquitetura de Autenticação e Reset de Senha**
 
-A API utiliza uma arquitetura simplificada com apenas **um endpoint de autenticação**:
+A API utiliza uma arquitetura simplificada com endpoints essenciais para autenticação e reset de senha:
 
 | Endpoint | Método | Propósito | Autenticação | Autorização |
 |----------|--------|-----------|--------------|-------------|
-| `/api/auth/authenticate` | POST | Gerar token JWT | ❌ Não | ❌ Não |
+| `/api/auth/login` | POST | Login com email/senha | ❌ Não | ❌ Não |
+| `/api/auth/forgot-password` | POST | Solicitar reset de senha | ❌ Não | ❌ Não |
+| `/api/auth/reset-password-with-reset-token` | POST | Resetar senha com token | ❌ Não | ❌ Não |
 | `/api/users` | GET | Listar usuários | ✅ Sim | ❌ Não |
 | `/api/users` | POST | Criar usuário | ✅ Sim | ✅ Admin |
 | `/api/users/{id}` | GET | Buscar usuário | ✅ Sim | ❌ Não |
+| `/api/users/create-without-token` | POST | Criar usuário sem token | ❌ Não | ❌ Não |
 
 ### **Fluxo de Autenticação**
 
@@ -79,11 +102,61 @@ A API utiliza uma arquitetura simplificada com apenas **um endpoint de autentica
 2. **Acesso**: Cliente usa token em todas as requisições protegidas
 3. **Autorização**: Sistema verifica se usuário é administrador para operações restritas
 
+### **🔄 Fluxo de Reset de Senha**
+
+O sistema implementa um fluxo seguro de reset de senha em **2 etapas**:
+
+#### **Etapa 1: Solicitar Reset de Senha**
+```http
+POST /api/auth/forgot-password
+Content-Type: application/json
+
+{
+  "email": "usuario@email.com"
+}
+```
+
+**Resposta de Sucesso (200):**
+```json
+{
+  "token": "w+HJapaOPr5JJqie9mcU4FpVa+3EOIDl1kDYvRH3ZDY=",
+  "expiresAt": "2025-09-17T17:40:14.4573806Z",
+  "message": "Token de reset enviado para o email"
+}
+```
+
+#### **Etapa 2: Resetar Senha com Token**
+```http
+POST /api/auth/reset-password-with-reset-token
+Content-Type: application/json
+
+{
+  "email": "usuario@email.com",
+  "token": "w+HJapaOPr5JJqie9mcU4FpVa+3EOIDl1kDYvRH3ZDY=",
+  "newPassword": "NovaSenha123",
+  "confirmPassword": "NovaSenha123"
+}
+```
+
+**Resposta de Sucesso (200):**
+```json
+{
+  "message": "Senha alterada com sucesso"
+}
+```
+
+#### **Características do Sistema de Reset:**
+- ✅ **Tokens únicos**: Cada token é único e não reutilizável
+- ✅ **Expiração**: Tokens expiram em 1 hora
+- ✅ **Invalidação**: Tokens anteriores são invalidados ao gerar novo
+- ✅ **Segurança**: Apenas o email correto pode usar o token
+- ✅ **Validação**: Senha deve ter pelo menos 6 caracteres
+
 ### **Endpoints Detalhados**
 
 #### 🔑 **Autenticação**
 ```http
-POST /api/auth/authenticate
+POST /api/auth/login
 Content-Type: application/json
 
 {
@@ -108,6 +181,13 @@ Content-Type: application/json
 }
 ```
 
+**Token JWT contém as seguintes claims:**
+- `userId`: ID do usuário
+- `isAdministrator`: Status de administrador (True/False)
+- `exp`: Data de expiração (24 horas)
+- `iss`: Emissor (Sistemaws)
+- `aud`: Audiência (SistemawsUsers)
+
 #### 👥 **Usuários**
 
 **Listar Usuários (Requer Autenticação)**
@@ -125,7 +205,21 @@ Content-Type: application/json
 {
   "name": "Maria Silva",
   "email": "maria.silva@email.com",
-  "password": "MinhaSenh@456"
+  "password": "MinhaSenh@456",
+  "isAdministrator": false
+}
+```
+
+**Criar Usuário sem Token (Apenas quando não há usuários no sistema)**
+```http
+POST /api/users/create-without-token
+Content-Type: application/json
+
+{
+  "name": "Primeiro Administrador",
+  "email": "admin@admin.com.br",
+  "password": "123456",
+  "isAdministrator": true
 }
 ```
 
@@ -148,6 +242,7 @@ Authorization: Bearer {seu-jwt-token}
 #### **Geração de Token JWT**
 - ✅ Token válido por **24 horas**
 - ✅ Contém informações do usuário (ID, Email, IsAdministrator)
+- ✅ **Claim `isAdministrator`**: Incluída automaticamente no token
 - ✅ Assinado com chave secreta configurada
 
 ### **👥 Sistema de Usuários**
@@ -181,6 +276,7 @@ Authorization: Bearer {seu-jwt-token}
 - ✅ **Administradores**: Podem criar usuários
 - ✅ **Usuários Comuns**: Não podem criar usuários
 - ✅ Sistema verifica `IsAdministrator` no token JWT
+- ✅ **Claim obrigatória**: Token deve conter `isAdministrator: "True"` para operações de admin
 
 ### **📊 Códigos de Resposta HTTP**
 
@@ -401,7 +497,8 @@ dotnet ef database update --project Sistemaws.Infrastructure --startup-project S
 ## 📚 Documentação Swagger
 
 ### **Acessar Swagger UI**
-- **URL**: `http://localhost:7201/swagger`
+- **URL Docker**: `http://localhost:7071/swagger`
+- **URL Local**: `http://localhost:7201/swagger`
 - **Funcionalidades**:
   - ✅ **Documentação interativa** de todos os endpoints
   - ✅ **Teste direto** dos endpoints na interface
@@ -410,7 +507,7 @@ dotnet ef database update --project Sistemaws.Infrastructure --startup-project S
   - ✅ **Exemplos de requisições** e respostas
 
 ### **Como usar o Swagger**
-1. **Acesse**: `http://localhost:7201/swagger`
+1. **Acesse**: `http://localhost:7071/swagger` (Docker) ou `http://localhost:7201/swagger` (Local)
 2. **Autentique**: Clique em "Authorize" e cole seu token JWT
 3. **Teste**: Execute os endpoints diretamente na interface
 4. **Explore**: Veja todos os schemas e modelos de dados
@@ -421,7 +518,7 @@ dotnet ef database update --project Sistemaws.Infrastructure --startup-project S
 
 #### **1. Autenticação**
 ```http
-POST http://localhost:7201/api/auth/authenticate
+POST http://localhost:7071/api/auth/login
 Content-Type: application/json
 
 {
@@ -432,20 +529,43 @@ Content-Type: application/json
 
 #### **2. Listar Usuários**
 ```http
-GET http://localhost:7201/api/users
+GET http://localhost:7071/api/users
 Authorization: Bearer {token-do-passo-1}
 ```
 
 #### **3. Criar Usuário (Admin)**
 ```http
-POST http://localhost:7201/api/users
+POST http://localhost:7071/api/users
 Authorization: Bearer {token-do-passo-1}
 Content-Type: application/json
 
 {
   "name": "Maria Silva",
   "email": "maria.silva@email.com",
-  "password": "MinhaSenh@456"
+  "password": "MinhaSenh@456",
+  "isAdministrator": false
+}
+```
+
+#### **4. Reset de Senha**
+```http
+# Etapa 1: Solicitar reset
+POST http://localhost:7071/api/auth/forgot-password
+Content-Type: application/json
+
+{
+  "email": "admin@admin.com.br"
+}
+
+# Etapa 2: Resetar senha
+POST http://localhost:7071/api/auth/reset-password-with-reset-token
+Content-Type: application/json
+
+{
+  "email": "admin@admin.com.br",
+  "token": "token-recebido-na-etapa-1",
+  "newPassword": "NovaSenha123",
+  "confirmPassword": "NovaSenha123"
 }
 ```
 
@@ -453,12 +573,25 @@ Content-Type: application/json
 ```powershell
 # Autenticação
 $body = @{ email = "admin@admin.com.br"; password = "123456" } | ConvertTo-Json
-$response = Invoke-RestMethod -Uri "http://localhost:7201/api/auth/authenticate" -Method POST -ContentType "application/json" -Body $body
+$response = Invoke-RestMethod -Uri "http://localhost:7071/api/auth/login" -Method POST -ContentType "application/json" -Body $body
 $token = $response.token
 
 # Listar usuários
 $headers = @{ Authorization = "Bearer $token" }
-$users = Invoke-RestMethod -Uri "http://localhost:7201/api/users" -Method GET -Headers $headers
+$users = Invoke-RestMethod -Uri "http://localhost:7071/api/users" -Method GET -Headers $headers
+
+# Reset de senha
+$forgotBody = @{ email = "admin@admin.com.br" } | ConvertTo-Json
+$resetResponse = Invoke-RestMethod -Uri "http://localhost:7071/api/auth/forgot-password" -Method POST -ContentType "application/json" -Body $forgotBody
+$resetToken = $resetResponse.token
+
+$resetPasswordBody = @{ 
+    email = "admin@admin.com.br"
+    token = $resetToken
+    newPassword = "NovaSenha123"
+    confirmPassword = "NovaSenha123"
+} | ConvertTo-Json
+Invoke-RestMethod -Uri "http://localhost:7071/api/auth/reset-password-with-reset-token" -Method POST -ContentType "application/json" -Body $resetPasswordBody
 ```
 
 ## 🚀 Desenvolvimento
@@ -489,12 +622,27 @@ public class CreateUserCommandValidator : AbstractValidator<CreateUserCommand>
 ```typescript
 @Injectable()
 export class AuthService {
-  private apiUrl = 'http://localhost:7201/api';
+  private apiUrl = 'http://localhost:7071/api'; // Docker
+  // private apiUrl = 'http://localhost:7201/api'; // Local
   
-  // ✅ CORRETO: Usar apenas /authenticate
-  authenticate(email: string, password: string): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/auth/authenticate`, {
+  // ✅ CORRETO: Login com email/senha
+  login(email: string, password: string): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.apiUrl}/auth/login`, {
       email, password
+    });
+  }
+  
+  // ✅ CORRETO: Solicitar reset de senha
+  forgotPassword(email: string): Observable<ForgotPasswordResponse> {
+    return this.http.post<ForgotPasswordResponse>(`${this.apiUrl}/auth/forgot-password`, {
+      email
+    });
+  }
+  
+  // ✅ CORRETO: Resetar senha com token
+  resetPassword(email: string, token: string, newPassword: string, confirmPassword: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/auth/reset-password-with-reset-token`, {
+      email, token, newPassword, confirmPassword
     });
   }
   
@@ -506,7 +654,7 @@ export class AuthService {
     });
   }
   
-  // ✅ CORRETO: Criar usuários com token
+  // ✅ CORRETO: Criar usuários com token (admin)
   createUser(userData: any): Observable<User> {
     const token = this.getToken();
     return this.http.post<User>(`${this.apiUrl}/users`, userData, {
@@ -517,10 +665,18 @@ export class AuthService {
 ```
 
 ### **Fluxo no Frontend**
-1. **Login**: Chama `/api/auth/authenticate` com email + senha
+1. **Login**: Chama `/api/auth/login` com email + senha
 2. **Armazena Token**: Salva JWT no localStorage/sessionStorage
 3. **Requisições**: Inclui `Authorization: Bearer {token}` em todas as chamadas
-4. **Logout**: Remove token do storage
+4. **Reset de Senha**: 
+   - Chama `/api/auth/forgot-password` para obter token
+   - Chama `/api/auth/reset-password-with-reset-token` para alterar senha
+5. **Logout**: Remove token do storage
+
+### **⚠️ Importante para o Frontend**
+- **Token JWT deve conter `isAdministrator`**: Para criar usuários, o token deve ter a claim `isAdministrator: "True"`
+- **Logout/Login necessário**: Se o token antigo não contém `isAdministrator`, faça logout e login novamente
+- **Reset de senha em 2 etapas**: Não é possível alterar senha diretamente, apenas via token de reset
 
 ## 📚 Recursos Adicionais
 
