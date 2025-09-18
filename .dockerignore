@@ -4,45 +4,38 @@
 **/out/
 
 # Arquivos de IDE
-**/.vs/
-**/.vscode/
-**/*.user
-**/*.suo
+.vs/
+.vscode/
+*.user
+*.suo
+*.userprefs
 
 # Arquivos de teste
 **/TestResults/
 **/coverage/
 
+# Arquivos de log
+*.log
+
 # Arquivos temporários
-**/tmp/
-**/temp/
+*.tmp
+*.temp
 
-# Logs
-**/*.log
+# Arquivos de sistema
+.DS_Store
+Thumbs.db
 
-# Arquivos do sistema
-**/.DS_Store
-**/Thumbs.db
+# Arquivos Git
+.git/
+.gitignore
 
-# Arquivos de backup
-**/*.bak
-**/*.backup
+# Documentação
+*.md
+!README.md
+
+# Scripts PowerShell
+*.ps1
 
 # Arquivos de configuração local
-**/appsettings.Development.json
-**/local.settings.json
-
-# Arquivos do OneDrive
-**/d91b75932d89a2f82a9d45bf532dcd0e732a/
-
-# Arquivos de documentação (opcional)
-**/README.md
-**/README-Docker.md
-
-# Arquivos de script
-**/*.ps1
-**/*.sh
-
-
-
-
+appsettings.Development.json
+appsettings.Production.json

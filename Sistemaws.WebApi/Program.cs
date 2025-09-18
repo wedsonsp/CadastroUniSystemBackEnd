@@ -84,9 +84,9 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// Configure URLs
-app.Urls.Clear();
-app.Urls.Add("http://localhost:7201");
+// Configure URLs - Let ASPNETCORE_URLS environment variable handle this
+// app.Urls.Clear();
+// app.Urls.Add("http://localhost:7201");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

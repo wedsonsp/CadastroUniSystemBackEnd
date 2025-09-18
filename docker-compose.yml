@@ -1,6 +1,7 @@
 version: '3.8'
 
 services:
+  # Banco de dados principal
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: sistemaws-sqlserver
@@ -12,38 +13,34 @@ services:
       - "1433:1433"
     volumes:
       - sqlserver_data:/var/opt/mssql
+      - ./init-db:/docker-entrypoint-initdb.d
     networks:
       - sistemaws-network
+    # healthcheck:
+    #   test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P YourStrong@Passw0rd -C -Q 'SELECT 1' || exit 1"]
+    #   interval: 10s
+    #   timeout: 5s
+    #   retries: 10
+    #   start_period: 60s
 
-  # Banco de Produção
-  unisystem-db:
-    image: mcr.microsoft.com/mssql/server:2022-latest
-    container_name: unisystem-prod
-    environment:
-      - ACCEPT_EULA=Y
-      - SA_PASSWORD=YourStrong@Passw0rd
-      - MSSQL_PID=Express
+  # Aplicação .NET
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sistemaws-api
     ports:
-      - "1434:1433"
-    volumes:
-      - unisystem_data:/var/opt/mssql
+      - "7071:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=UniSystem;User Id=sa;Password=YourStrong@Passw0rd;MultipleActiveResultSets=true;TrustServerCertificate=True
+    depends_on:
+      - sqlserver
     networks:
       - sistemaws-network
-
-  # Banco de Desenvolvimento
-  unisystem-dev-db:
-    image: mcr.microsoft.com/mssql/server:2022-latest
-    container_name: unisystem-dev
-    environment:
-      - ACCEPT_EULA=Y
-      - SA_PASSWORD=YourStrong@Passw0rd
-      - MSSQL_PID=Express
-    ports:
-      - "1435:1433"
     volumes:
-      - unisystem_dev_data:/var/opt/mssql
-    networks:
-      - sistemaws-network
+      - ./Sistemaws.WebApi/appsettings.json:/app/appsettings.json:ro
 
 volumes:
   sqlserver_data:
