@@ -1,0 +1,46 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35506.116 d17.12
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sistemaws.Application", "..\Sistemaws.Application\Sistemaws.Application.csproj", "{AB51C235-433E-4C40-B882-4151B94085B2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sistemaws.Infrastructure", "..\Sistemaws.Infrastructure\Sistemaws.Infrastructure.csproj", "{8F312540-EA4B-4D4F-A684-3FDB841DE1D3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sistemaws.Domain", "..\Sistemaws.Domain\Sistemaws.Domain.csproj", "{23968A16-B836-4C89-86AE-006D897CC59A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sistemaws.Test", "..\Sistemaws.Test\Sistemaws.Test.csproj", "{44B875FA-1493-4BFD-B01C-B042B4A91D32}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sistemaws.Function", "..\Sistemaws.Function\Sistemaws.Function.csproj", "{6B9B077B-082C-4E23-BB6E-BCEB8AFFEE69}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AB51C235-433E-4C40-B882-4151B94085B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB51C235-433E-4C40-B882-4151B94085B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB51C235-433E-4C40-B882-4151B94085B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB51C235-433E-4C40-B882-4151B94085B2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8F312540-EA4B-4D4F-A684-3FDB841DE1D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F312540-EA4B-4D4F-A684-3FDB841DE1D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F312540-EA4B-4D4F-A684-3FDB841DE1D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F312540-EA4B-4D4F-A684-3FDB841DE1D3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{23968A16-B836-4C89-86AE-006D897CC59A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{23968A16-B836-4C89-86AE-006D897CC59A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{23968A16-B836-4C89-86AE-006D897CC59A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{23968A16-B836-4C89-86AE-006D897CC59A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{44B875FA-1493-4BFD-B01C-B042B4A91D32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{44B875FA-1493-4BFD-B01C-B042B4A91D32}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{44B875FA-1493-4BFD-B01C-B042B4A91D32}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{44B875FA-1493-4BFD-B01C-B042B4A91D32}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6B9B077B-082C-4E23-BB6E-BCEB8AFFEE69}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B9B077B-082C-4E23-BB6E-BCEB8AFFEE69}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B9B077B-082C-4E23-BB6E-BCEB8AFFEE69}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B9B077B-082C-4E23-BB6E-BCEB8AFFEE69}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

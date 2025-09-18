@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  # Banco de dados SQL Server
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sistemaws-sqlserver
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=YourStrong@Passw0rd
+      - MSSQL_PID=Express
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    networks:
+      - sistemaws-network
+
+  # API Azure Functions
+  api:
+    build:
+      context: .
+      dockerfile: ./Sistemaws.Function/Dockerfile
+    container_name: sistemaws-api
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=UniSystem;User Id=sa;Password=YourStrong@Passw0rd;MultipleActiveResultSets=true;TrustServerCertificate=True
+      - Jwt__Key=YourSuperSecretKeyThatIsAtLeast32CharactersLong!
+      - Jwt__Issuer=Sistemaws
+      - Jwt__Audience=SistemawsUsers
+      - AzureWebJobsStorage=DefaultEndpointsProtocol=https;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;EndpointSuffix=core.windows.net
+      - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
+    ports:
+      - "7071:80"
+    depends_on:
+      - sqlserver
+    networks:
+      - sistemaws-network
+    volumes:
+      - ./Sistemaws.Function:/home/site/wwwroot
+
+  # Frontend Angular (opcional - se você quiser rodar tudo junto)
+  frontend:
+    image: node:18-alpine
+    container_name: sistemaws-frontend
+    working_dir: /app
+    command: sh -c "npm install && npm start"
+    ports:
+      - "4200:4200"
+    volumes:
+      - ./ProjetoWedsonFront:/app
+    networks:
+      - sistemaws-network
+    profiles:
+      - frontend
+
+volumes:
+  sqlserver_data:
+
+networks:
+  sistemaws-network:
+    driver: bridge

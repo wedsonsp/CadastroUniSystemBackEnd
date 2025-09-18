@@ -1,0 +1,118 @@
+### Teste de Cenários de "Não Autorizado" (401 Unauthorized)
+
+# 1. TESTE: Fazer login com credenciais inválidas
+POST http://localhost:7071/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "usuario@inexistente.com",
+  "password": "senha_errada"
+}
+
+###
+
+# 2. TESTE: Fazer login com email válido mas senha incorreta
+POST http://localhost:7071/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@teste.com",
+  "password": "senha_incorreta"
+}
+
+###
+
+# 3. TESTE: Acessar endpoint protegido sem token JWT
+GET http://localhost:7071/api/users
+Content-Type: application/json
+
+###
+
+# 4. TESTE: Acessar endpoint protegido com token JWT inválido
+GET http://localhost:7071/api/users
+Content-Type: application/json
+Authorization: Bearer token_invalido_123
+
+###
+
+# 5. TESTE: Acessar endpoint protegido com token JWT expirado
+GET http://localhost:7071/api/users
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+
+###
+
+# 6. TESTE: Acessar endpoint protegido com token JWT malformado
+GET http://localhost:7071/api/users
+Content-Type: application/json
+Authorization: Bearer token.malformado
+
+###
+
+# 7. TESTE: Acessar endpoint protegido sem header Authorization
+GET http://localhost:7071/api/users/1
+Content-Type: application/json
+
+###
+
+# 8. TESTE: Acessar endpoint protegido com token JWT válido (deve funcionar)
+# Primeiro, faça login para obter um token válido:
+POST http://localhost:7071/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "usuario@valido.com",
+  "password": "senha_correta"
+}
+
+# Depois use o token retornado no campo "token" do response:
+# GET http://localhost:7071/api/users
+# Content-Type: application/json
+# Authorization: Bearer SEU_TOKEN_AQUI
+
+###
+
+# 9. TESTE: Criar usuário sem autenticação (deve retornar 401 - endpoint protegido)
+POST http://localhost:7071/api/users
+Content-Type: application/json
+
+{
+  "name": "Usuário Teste",
+  "email": "teste@exemplo.com",
+  "password": "MinhaSenh@123"
+}
+
+###
+
+# 10. TESTE: Login com dados válidos (deve funcionar)
+POST http://localhost:7071/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "teste@exemplo.com",
+  "password": "MinhaSenh@123"
+}
+
+
+
+###
+
+# 11. TESTE: Criar usuário com JSON vazio (deve retornar 401 - endpoint protegido)
+POST http://localhost:7071/api/users
+Content-Type: application/json
+
+{}
+
+###
+
+# 12. TESTE: Criar usuário com token JWT válido (deve funcionar)
+# Primeiro faça login para obter o token, depois use aqui:
+POST http://localhost:7071/api/users
+Content-Type: application/json
+Authorization: Bearer SEU_TOKEN_AQUI
+
+{
+  "name": "Usuário Teste",
+  "email": "teste@exemplo.com",
+  "password": "MinhaSenh@123"
+}

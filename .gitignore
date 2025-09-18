@@ -1,0 +1,38 @@
+# .NET Core
+bin/
+obj/
+*.user
+*.suo
+*.cache
+*.dll
+*.pdb
+*.exe
+*.log
+
+# Visual Studio
+.vs/
+*.sln.docstates
+
+# Azure Functions
+local.settings.json
+bin/
+obj/
+
+# Database
+*.mdf
+*.ldf
+
+# Node modules (se houver frontend)
+node_modules/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Secrets
+appsettings.Development.json
+*.secrets.json

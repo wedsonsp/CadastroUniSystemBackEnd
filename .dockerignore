@@ -1,0 +1,46 @@
+# Arquivos de build
+**/bin/
+**/obj/
+**/out/
+
+# Arquivos de IDE
+**/.vs/
+**/.vscode/
+**/*.user
+**/*.suo
+
+# Arquivos de teste
+**/TestResults/
+**/coverage/
+
+# Arquivos temporários
+**/tmp/
+**/temp/
+
+# Logs
+**/*.log
+
+# Arquivos do sistema
+**/.DS_Store
+**/Thumbs.db
+
+# Arquivos de backup
+**/*.bak
+**/*.backup
+
+# Arquivos de configuração local
+**/appsettings.Development.json
+**/local.settings.json
+
+# Arquivos do OneDrive
+**/d91b75932d89a2f82a9d45bf532dcd0e732a/
+
+# Arquivos de documentação (opcional)
+**/README.md
+**/README-Docker.md
+
+# Arquivos de script
+**/*.ps1
+**/*.sh
+
+
