@@ -1,6 +1,6 @@
 # Sistemaws API
 
-Uma API REST desenvolvida em .NET Core 8 seguindo os princípios de Clean Architecture, com autenticação JWT e CQRS. A API utiliza ASP.NET Core Web API para fornecer endpoints escaláveis e seguros.
+Uma API REST desenvolvida em .NET Core 8 seguindo os princípios de **Domain-Driven Design (DDD)** e **Clean Architecture**, com autenticação JWT, CQRS e documentação Swagger. A API utiliza ASP.NET Core Web API para fornecer endpoints escaláveis e seguros.
 
 ## Funcionalidades
 
@@ -57,7 +57,8 @@ dotnet run
 
 ### Acessar a API
 - **Web API**: `http://localhost:7201`
-- **Swagger UI**: `http://localhost:7201/swagger`
+- **📚 Swagger UI**: `http://localhost:7201/swagger` - Documentação interativa completa
+- **🔧 Swagger JSON**: `http://localhost:7201/swagger/v1/swagger.json` - Especificação OpenAPI
 
 ## 🔐 Regras de Negócio e Endpoints
 
@@ -226,13 +227,14 @@ A aplicação usa SQL Server com Entity Framework Core. O banco é criado automa
 
 ### **Usuários de Teste**
 
-#### **Administrador Padrão**
+#### **🔐 Administrador Padrão (Criado Automaticamente)**
 - **Email**: `admin@admin.com.br`
-- **Senha**: `Admin123!`
+- **Senha**: `123456`
 - **Role**: Administrador
 - **Status**: Ativo
+- **Criação**: Automática quando o banco está vazio
 
-#### **Usuários Criados pelo Admin**
+#### **👥 Usuários Criados pelo Admin**
 - **Email**: `roberta.silva@gmail.com`
 - **Senha**: `123456`
 - **Role**: Administrador
@@ -242,6 +244,20 @@ A aplicação usa SQL Server com Entity Framework Core. O banco é criado automa
 - **Senha**: `123456`
 - **Role**: Usuário Comum
 - **Status**: Ativo
+
+#### **🚀 Criação Automática do Administrador**
+
+Quando o banco de dados está **sem nenhum registro**, o sistema automaticamente cria um usuário administrador com as credenciais:
+
+- **Email**: `admin@admin.com.br`
+- **Senha**: `123456`
+- **IsAdministrator**: `true`
+- **IsActive**: `true`
+
+Este usuário pode ser usado para:
+- ✅ Fazer login e obter token JWT
+- ✅ Criar novos usuários no sistema
+- ✅ Acessar todos os endpoints protegidos
 
 ### **Criando Usuários de Teste**
 
@@ -255,20 +271,87 @@ VALUES ('João Silva', 'joao.silva@email.com', 'HASH_DA_SENHA', 'SALT_ALEATORIO'
 
 ## 🏗️ Arquitetura
 
-### **Clean Architecture**
+### **Domain-Driven Design (DDD) + Clean Architecture**
+
+O projeto implementa uma arquitetura híbrida combinando os princípios de **DDD** e **Clean Architecture**:
+
+#### **🎯 Domain-Driven Design (DDD)**
 - **Domain**: Entidades, interfaces e regras de negócio puras
-- **Application**: Casos de uso, commands, queries e handlers
+- **Application**: Casos de uso, commands, queries e handlers (CQRS)
 - **Infrastructure**: Implementações concretas (repositórios, serviços, DbContext)
 - **WebApi**: ASP.NET Core Web API com Controllers
 
+#### **🏛️ Clean Architecture**
+- **Separação de responsabilidades** em camadas bem definidas
+- **Inversão de dependência** com interfaces
+- **Testabilidade** com abstrações
+- **Manutenibilidade** com código organizado
+
 ### **CQRS (Command Query Responsibility Segregation)**
-- **Commands**: Operações que modificam dados
-  - `CreateUserCommand` - Criar novo usuário
-  - `AuthenticateCommand` - Autenticar usuário
-- **Queries**: Operações que apenas leem dados
-  - `GetAllUsersQuery` - Listar todos os usuários
-  - `GetUserByIdQuery` - Buscar usuário por ID
-- **Handlers**: Processam commands e queries usando MediatR
+
+O projeto implementa **CQRS completo** com separação clara entre Commands e Queries:
+
+#### **📋 Commands (Comandos)**
+- `CreateUserCommand` - Criar novo usuário
+- `AuthenticateCommand` - Autenticar usuário  
+- `LoginCommand` - Login com credenciais
+- `LoginWithTokenCommand` - Login com token
+
+#### **🔍 Queries (Consultas)**
+- `GetAllUsersQuery` - Listar todos os usuários
+- `GetUserByIdQuery` - Buscar usuário por ID
+
+#### **⚙️ Handlers (Manipuladores)**
+- `CreateUserCommandHandler` - Processa criação de usuários
+- `AuthenticateCommandHandler` - Processa autenticação
+- `LoginCommandHandler` - Processa login
+- `LoginWithTokenCommandHandler` - Processa login com token
+- `GetAllUsersQueryHandler` - Processa listagem de usuários
+- `GetUserByIdQueryHandler` - Processa busca por ID
+
+#### **🏗️ Arquitetura CQRS**
+```
+Controller → MediatR → Command/Query → Handler → Repository → Database
+```
+
+#### **📁 Estrutura dos arquivos CQRS**
+```
+Sistemaws.Application/
+├── Commands/
+│   ├── CreateUserCommand.cs
+│   ├── AuthenticateCommand.cs
+│   ├── LoginCommand.cs
+│   └── LoginWithTokenCommand.cs
+├── Queries/
+│   ├── GetAllUsersQuery.cs
+│   └── GetUserByIdQuery.cs
+└── Handlers/
+    ├── CreateUserCommandHandler.cs
+    ├── AuthenticateCommandHandler.cs
+    ├── LoginCommandHandler.cs
+    ├── LoginWithTokenCommandHandler.cs
+    ├── GetAllUsersQueryHandler.cs
+    └── GetUserByIdQueryHandler.cs
+```
+
+#### **🔧 Configuração CQRS**
+```csharp
+// MediatR configurado no Program.cs
+builder.Services.AddMediatR(cfg => {
+    cfg.RegisterServicesFromAssembly(typeof(CreateUserCommand).Assembly);
+});
+
+// FluentValidation configurado
+builder.Services.AddValidatorsFromAssembly(typeof(CreateUserCommandValidator).Assembly);
+```
+
+#### **✅ Benefícios do CQRS Implementado**
+- **Separação clara** entre operações de escrita e leitura
+- **Validação robusta** com FluentValidation
+- **Injeção de dependência** automática via MediatR
+- **Testabilidade** melhorada com handlers isolados
+- **Manutenibilidade** do código com responsabilidades bem definidas
+- **Escalabilidade** preparada para otimizações futuras
 
 ### **Segurança Implementada**
 - ✅ **Hash de Senhas**: SHA256 + Salt único por usuário
@@ -281,8 +364,9 @@ VALUES ('João Silva', 'joao.silva@email.com', 'HASH_DA_SENHA', 'SALT_ALEATORIO'
 - ✅ **Controllers**: Endpoints REST tradicionais
 - ✅ **Middleware**: Pipeline de requisições configurável
 - ✅ **Dependency Injection**: Container DI nativo
-- ✅ **Swagger**: Documentação interativa automática
+- ✅ **Swagger/OpenAPI**: Documentação interativa automática com autenticação JWT
 - ✅ **CORS**: Configurado para desenvolvimento frontend
+- ✅ **Domain-Driven Design**: Implementação completa de DDD
 
 ## 🗄️ Banco de Dados
 
@@ -314,6 +398,23 @@ dotnet ef migrations add InitialCreate --project Sistemaws.Infrastructure --star
 dotnet ef database update --project Sistemaws.Infrastructure --startup-project Sistemaws.WebApi
 ```
 
+## 📚 Documentação Swagger
+
+### **Acessar Swagger UI**
+- **URL**: `http://localhost:7201/swagger`
+- **Funcionalidades**:
+  - ✅ **Documentação interativa** de todos os endpoints
+  - ✅ **Teste direto** dos endpoints na interface
+  - ✅ **Autenticação JWT** integrada (botão "Authorize")
+  - ✅ **Esquemas de dados** detalhados
+  - ✅ **Exemplos de requisições** e respostas
+
+### **Como usar o Swagger**
+1. **Acesse**: `http://localhost:7201/swagger`
+2. **Autentique**: Clique em "Authorize" e cole seu token JWT
+3. **Teste**: Execute os endpoints diretamente na interface
+4. **Explore**: Veja todos os schemas e modelos de dados
+
 ## 🧪 Testes
 
 ### **Testando com Postman**
@@ -325,7 +426,7 @@ Content-Type: application/json
 
 {
   "email": "admin@admin.com.br",
-  "password": "Admin123!"
+  "password": "123456"
 }
 ```
 
@@ -351,7 +452,7 @@ Content-Type: application/json
 ### **Testando com PowerShell**
 ```powershell
 # Autenticação
-$body = @{ email = "admin@admin.com.br"; password = "Admin123!" } | ConvertTo-Json
+$body = @{ email = "admin@admin.com.br"; password = "123456" } | ConvertTo-Json
 $response = Invoke-RestMethod -Uri "http://localhost:7201/api/auth/authenticate" -Method POST -ContentType "application/json" -Body $body
 $token = $response.token
 
@@ -424,9 +525,10 @@ export class AuthService {
 ## 📚 Recursos Adicionais
 
 - **ASP.NET Core Web API**: [docs.microsoft.com/aspnet/core/web-api](https://docs.microsoft.com/aspnet/core/web-api)
-- **JWT Authentication**: [jwt.io](https://jwt.io)
+- **Domain-Driven Design**: [martinfowler.com/bliki/DomainDrivenDesign.html](https://martinfowler.com/bliki/DomainDrivenDesign.html)
 - **Clean Architecture**: [blog.cleancoder.com](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
 - **CQRS Pattern**: [martinfowler.com/bliki/CQRS.html](https://martinfowler.com/bliki/CQRS.html)
+- **JWT Authentication**: [jwt.io](https://jwt.io)
 - **Swagger/OpenAPI**: [swagger.io](https://swagger.io)
 
 ## 📄 Licença
