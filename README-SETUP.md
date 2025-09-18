@@ -94,9 +94,33 @@ taskkill /F /IM dotnet.exe
 powershell -ExecutionPolicy Bypass -File start-applications.ps1
 ```
 
+### **Configuração Dinâmica de Porta**
+O backend agora suporta configuração dinâmica de porta:
+
+#### **Método 1: Variável de Ambiente**
+```powershell
+# Definir porta específica
+$env:BACKEND_PORT = "7202"
+dotnet run --project Sistemaws
+```
+
+#### **Método 2: Script PowerShell**
+```powershell
+# Usar o script fornecido
+.\set-backend-port.ps1 7202
+dotnet run --project Sistemaws
+```
+
+#### **Método 3: Automático**
+Se não especificar porta ou se a porta estiver ocupada, o sistema automaticamente:
+1. Tenta usar a porta padrão (7201)
+2. Se ocupada, procura a próxima porta disponível
+3. Exibe no console qual porta está sendo usada
+
 ### **Erro de CORS**
-- Verifique se está usando a porta correta (7201 para API, 7205 para Functions)
+- Verifique se está usando a porta correta (consulte o console do backend)
 - Certifique-se de que apenas uma aplicação está rodando por porta
+- Atualize a URL no frontend se a porta mudou automaticamente
 
 ### **Erro de Banco de Dados**
 - Verifique se o SQL Server está rodando
