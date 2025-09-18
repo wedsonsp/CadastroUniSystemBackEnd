@@ -1,6 +1,6 @@
 # Sistemaws API
 
-Uma API REST desenvolvida em .NET Core 8 seguindo os princípios de Clean Architecture, com autenticação JWT e CQRS. A API utiliza Azure Functions para fornecer endpoints escaláveis e seguros.
+Uma API REST desenvolvida em .NET Core 8 seguindo os princípios de Clean Architecture, com autenticação JWT e CQRS. A API utiliza ASP.NET Core Web API para fornecer endpoints escaláveis e seguros.
 
 ## Funcionalidades
 
@@ -12,7 +12,8 @@ Uma API REST desenvolvida em .NET Core 8 seguindo os princípios de Clean Archit
 - ✅ **Arquitetura limpa** - Separação clara de responsabilidades
 - ✅ **CQRS** - Command Query Responsibility Segregation
 - ✅ **Entity Framework Core** - ORM com SQL Server
-- ✅ **Azure Functions** - Deploy escalável na nuvem
+- ✅ **Swagger/OpenAPI** - Documentação interativa da API
+- ✅ **CORS** - Configurado para desenvolvimento frontend
 
 ## Estrutura do Projeto
 
@@ -21,52 +22,42 @@ Sistemaws/
 ├── Sistemaws.Domain/           # Entidades, interfaces e DTOs
 ├── Sistemaws.Application/      # Commands, Queries, Handlers e Validators
 ├── Sistemaws.Infrastructure/   # Repositórios, serviços e DbContext
-├── Sistemaws.Function/         # Azure Functions (API principal)
-└── Sistemaws/                  # API tradicional (alternativa)
+├── Sistemaws.WebApi/           # ASP.NET Core Web API (API principal)
+└── Sistemaws.Test/             # Testes unitários
 ```
 
 ## Tecnologias Utilizadas
 
 - **.NET Core 8** - Framework principal
-- **Azure Functions** - Runtime serverless
+- **ASP.NET Core Web API** - Runtime da API
 - **Entity Framework Core** - ORM
-- **SQL Server** - Banco de dados
+- **SQL Server** - Banco de dados único
 - **JWT Authentication** - Autenticação segura
 - **MediatR** - Implementação CQRS
 - **FluentValidation** - Validação de dados
-- **Azure Functions Core Tools** - Desenvolvimento local
+- **Swagger/OpenAPI** - Documentação da API
 
 ## Como Executar
 
 ### Pré-requisitos
 - .NET 8 SDK
-- Azure Functions Core Tools v4
 - SQL Server (LocalDB ou Express)
 
-### Executar Azure Functions (Recomendado)
+### Executar Web API
 ```bash
-# Navegar para o projeto Azure Functions
-cd Sistemaws.Function
+# Navegar para o projeto Web API
+cd Sistemaws.WebApi
 
 # Instalar dependências
 dotnet restore
 
 # Executar localmente
-func start --port 7205
-```
-
-### Executar API Tradicional (Alternativa)
-```bash
-# Navegar para o projeto API
-cd Sistemaws
-
-# Executar
-dotnet run --urls="http://localhost:5007"
+dotnet run
 ```
 
 ### Acessar a API
-- **Azure Functions**: `http://localhost:7205/api`
-- **API Tradicional**: `http://localhost:5007/api`
+- **Web API**: `http://localhost:7201`
+- **Swagger UI**: `http://localhost:7201/swagger`
 
 ## 🔐 Regras de Negócio e Endpoints
 
@@ -210,10 +201,16 @@ A aplicação usa SQL Server com Entity Framework Core. O banco é criado automa
 ```json
 {
   "ConnectionStrings": {
-    "DefaultConnection": "Server=MARCCIELO\\SQLEXPRESS;Database=UniSystem_Dev;Integrated Security=True;MultipleActiveResultSets=true"
+    "DefaultConnection": "Server=MARCCIELO\\SQLEXPRESS;Database=UniSystem;Integrated Security=True;MultipleActiveResultSets=true;TrustServerCertificate=True"
   }
 }
 ```
+
+**Banco Único:**
+- ✅ **Simplicidade**: Um único banco de dados para toda a aplicação
+- ✅ **Transações ACID**: Garantia de consistência entre operações
+- ✅ **Manutenção**: Backup/restore simplificado
+- ✅ **Performance**: Menos overhead de conexões múltiplas
 
 ### **JWT Configuration**
 ```json
@@ -230,14 +227,19 @@ A aplicação usa SQL Server com Entity Framework Core. O banco é criado automa
 ### **Usuários de Teste**
 
 #### **Administrador Padrão**
-- **Email**: `joao.silva@email.com`
-- **Senha**: `MinhaSenh@123`
+- **Email**: `admin@admin.com.br`
+- **Senha**: `Admin123!`
 - **Role**: Administrador
 - **Status**: Ativo
 
-#### **Usuário Comum (Criado pelo Admin)**
-- **Email**: `maria.silva@email.com`
-- **Senha**: `MinhaSenh@456`
+#### **Usuários Criados pelo Admin**
+- **Email**: `roberta.silva@gmail.com`
+- **Senha**: `123456`
+- **Role**: Administrador
+- **Status**: Ativo
+
+- **Email**: `marcio.antunes@gmail.com`
+- **Senha**: `123456`
 - **Role**: Usuário Comum
 - **Status**: Ativo
 
@@ -257,7 +259,7 @@ VALUES ('João Silva', 'joao.silva@email.com', 'HASH_DA_SENHA', 'SALT_ALEATORIO'
 - **Domain**: Entidades, interfaces e regras de negócio puras
 - **Application**: Casos de uso, commands, queries e handlers
 - **Infrastructure**: Implementações concretas (repositórios, serviços, DbContext)
-- **Function**: Azure Functions com endpoints HTTP
+- **WebApi**: ASP.NET Core Web API com Controllers
 
 ### **CQRS (Command Query Responsibility Segregation)**
 - **Commands**: Operações que modificam dados
@@ -275,11 +277,12 @@ VALUES ('João Silva', 'joao.silva@email.com', 'HASH_DA_SENHA', 'SALT_ALEATORIO'
 - ✅ **Middleware**: Autenticação automática em endpoints protegidos
 - ✅ **Autorização**: Controle de acesso baseado em roles (Admin/User)
 
-### **Azure Functions**
-- ✅ **Serverless**: Escalabilidade automática
-- ✅ **HTTP Triggers**: Endpoints REST nativos
-- ✅ **Middleware**: Interceptação de requisições
+### **ASP.NET Core Web API**
+- ✅ **Controllers**: Endpoints REST tradicionais
+- ✅ **Middleware**: Pipeline de requisições configurável
 - ✅ **Dependency Injection**: Container DI nativo
+- ✅ **Swagger**: Documentação interativa automática
+- ✅ **CORS**: Configurado para desenvolvimento frontend
 
 ## 🗄️ Banco de Dados
 
@@ -305,10 +308,10 @@ CREATE TABLE [Users] (
 ### **Migrações**
 ```bash
 # Criar migração
-dotnet ef migrations add InitialCreate --project Sistemaws.Infrastructure --startup-project Sistemaws.Function
+dotnet ef migrations add InitialCreate --project Sistemaws.Infrastructure --startup-project Sistemaws.WebApi
 
 # Aplicar migração
-dotnet ef database update --project Sistemaws.Infrastructure --startup-project Sistemaws.Function
+dotnet ef database update --project Sistemaws.Infrastructure --startup-project Sistemaws.WebApi
 ```
 
 ## 🧪 Testes
@@ -317,24 +320,24 @@ dotnet ef database update --project Sistemaws.Infrastructure --startup-project S
 
 #### **1. Autenticação**
 ```http
-POST http://localhost:7205/api/auth/authenticate
+POST http://localhost:7201/api/auth/authenticate
 Content-Type: application/json
 
 {
-  "email": "joao.silva@email.com",
-  "password": "MinhaSenh@123"
+  "email": "admin@admin.com.br",
+  "password": "Admin123!"
 }
 ```
 
 #### **2. Listar Usuários**
 ```http
-GET http://localhost:7205/api/users
+GET http://localhost:7201/api/users
 Authorization: Bearer {token-do-passo-1}
 ```
 
 #### **3. Criar Usuário (Admin)**
 ```http
-POST http://localhost:7205/api/users
+POST http://localhost:7201/api/users
 Authorization: Bearer {token-do-passo-1}
 Content-Type: application/json
 
@@ -348,13 +351,13 @@ Content-Type: application/json
 ### **Testando com PowerShell**
 ```powershell
 # Autenticação
-$body = @{ email = "joao.silva@email.com"; password = "MinhaSenh@123" } | ConvertTo-Json
-$response = Invoke-RestMethod -Uri "http://localhost:7205/api/auth/authenticate" -Method POST -ContentType "application/json" -Body $body
+$body = @{ email = "admin@admin.com.br"; password = "Admin123!" } | ConvertTo-Json
+$response = Invoke-RestMethod -Uri "http://localhost:7201/api/auth/authenticate" -Method POST -ContentType "application/json" -Body $body
 $token = $response.token
 
 # Listar usuários
 $headers = @{ Authorization = "Bearer $token" }
-$users = Invoke-RestMethod -Uri "http://localhost:7205/api/users" -Method GET -Headers $headers
+$users = Invoke-RestMethod -Uri "http://localhost:7201/api/users" -Method GET -Headers $headers
 ```
 
 ## 🚀 Desenvolvimento
@@ -364,7 +367,7 @@ $users = Invoke-RestMethod -Uri "http://localhost:7205/api/users" -Method GET -H
 1. **Domain**: Crie entidades e interfaces
 2. **Application**: Implemente commands/queries e handlers
 3. **Infrastructure**: Implemente repositórios e serviços
-4. **Function**: Crie Azure Functions
+4. **WebApi**: Crie Controllers para expor endpoints
 
 ### **Validações com FluentValidation**
 ```csharp
@@ -385,7 +388,7 @@ public class CreateUserCommandValidator : AbstractValidator<CreateUserCommand>
 ```typescript
 @Injectable()
 export class AuthService {
-  private apiUrl = 'http://localhost:7205/api';
+  private apiUrl = 'http://localhost:7201/api';
   
   // ✅ CORRETO: Usar apenas /authenticate
   authenticate(email: string, password: string): Observable<AuthResponse> {
@@ -401,6 +404,14 @@ export class AuthService {
       headers: { Authorization: `Bearer ${token}` }
     });
   }
+  
+  // ✅ CORRETO: Criar usuários com token
+  createUser(userData: any): Observable<User> {
+    const token = this.getToken();
+    return this.http.post<User>(`${this.apiUrl}/users`, userData, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+  }
 }
 ```
 
@@ -412,10 +423,11 @@ export class AuthService {
 
 ## 📚 Recursos Adicionais
 
-- **Azure Functions Documentation**: [docs.microsoft.com/azure/azure-functions](https://docs.microsoft.com/azure/azure-functions)
+- **ASP.NET Core Web API**: [docs.microsoft.com/aspnet/core/web-api](https://docs.microsoft.com/aspnet/core/web-api)
 - **JWT Authentication**: [jwt.io](https://jwt.io)
 - **Clean Architecture**: [blog.cleancoder.com](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
 - **CQRS Pattern**: [martinfowler.com/bliki/CQRS.html](https://martinfowler.com/bliki/CQRS.html)
+- **Swagger/OpenAPI**: [swagger.io](https://swagger.io)
 
 ## 📄 Licença
 

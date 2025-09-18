@@ -3,46 +3,34 @@
 ## 🏗️ Organograma Completo da Arquitetura
 
 ```
-📦 ProjetoWedson/
+📦 CadastroUniSystemBackEnd/
 ├── 📄 README.md                           # Documentação principal da API
+├── 📄 PROJECT-STRUCTURE.md                # Estrutura do projeto
+├── 📄 ARCHITECTURE-DIAGRAM.md             # Diagrama de arquitetura
+├── 📄 DATA-FLOW-DIAGRAM.md                # Diagrama de fluxo de dados
+├── 📄 FRONTEND-AUTH-GUIDE.md              # Guia de autenticação frontend
 ├── 📄 README-Docker.md                    # Documentação Docker
+├── 📄 README-SETUP.md                     # Guia de configuração
 ├── 📄 docker-compose.yml                  # Configuração Docker Compose
-├── 📄 docker-run.ps1                      # Script para executar Docker
-├── 📄 check-password.ps1                  # Script para verificar senhas
-├── 📄 create-test-user.sql               # SQL para criar usuário de teste
-├── 📄 test-auth.ps1                       # Script de teste de autenticação
-├── 📄 test-debug.ps1                      # Script de debug
-├── 📄 test-fix.ps1                        # Script de correção
-├── 📄 test-passwords.ps1                  # Script de teste de senhas
-├── 📄 test-simple.ps1                     # Script de teste simples
+├── 📄 Sistemaws.sln                      # Solução Visual Studio
 │
-├── 📁 Sistemaws/                          # 🎯 API Tradicional (.NET Core)
-│   ├── 📄 Program.cs                      # Ponto de entrada da aplicação
-│   ├── 📄 Sistemaws.csproj               # Arquivo de projeto
-│   ├── 📄 Sistemaws.csproj.user          # Configurações do usuário
-│   ├── 📄 Sistemaws.sln                  # Solução Visual Studio
-│   ├── 📄 Sistemaws.http                 # Arquivo de requisições HTTP
-│   ├── 📄 WeatherForecast.cs             # Modelo de exemplo
-│   ├── 📄 Dockerfile                     # Configuração Docker
+├── 📁 Sistemaws.WebApi/                   # 🌐 ASP.NET Core Web API (Principal)
+│   ├── 📄 Program.cs                      # Configuração da aplicação
+│   ├── 📄 Sistemaws.WebApi.csproj        # Arquivo de projeto
+│   ├── 📄 appsettings.json               # Configurações da aplicação
+│   ├── 📄 README.md                      # Documentação da Web API
 │   │
-│   ├── 📁 Controllers/                   # 🎮 Controladores MVC
+│   ├── 📁 Controllers/                   # 🎮 Controladores da API
 │   │   ├── 📄 AuthController.cs          # Controlador de autenticação
-│   │   └── 📄 WeatherForecastController.cs # Controlador de exemplo
-│   │
-│   ├── 📁 Properties/                    # ⚙️ Configurações
-│   │   └── 📄 launchSettings.json        # Configurações de execução
+│   │   ├── 📄 UsersController.cs         # Controlador de usuários
+│   │   └── 📄 TestController.cs          # Controlador de teste
 │   │
 │   ├── 📁 bin/                           # 📦 Binários compilados
 │   │   └── 📁 Debug/                     # Versão de debug
-│   │       ├── 📄 Sistemaws.dll          # Biblioteca principal
-│   │       ├── 📄 Sistemaws.exe          # Executável
-│   │       └── 📄 *.dll                  # Dependências
+│   │       └── 📁 net8.0/                # .NET 8.0
 │   │
-│   ├── 📁 obj/                           # 🔧 Arquivos temporários de build
-│   │   ├── 📁 Debug/                     # Objetos de debug
-│   │   └── 📁 Container/                 # Objetos de container
-│   │
-│   └── 📁 d91b75932d89a2f82a9d45bf532dcd0e732a/ # Cache do OneDrive
+│   └── 📁 obj/                           # 🔧 Arquivos temporários de build
+│       └── 📁 Debug/                     # Objetos de debug
 │
 ├── 📁 Sistemaws.Application/              # 🧠 Camada de Aplicação (CQRS)
 │   ├── 📄 Class1.cs                      # Classe de exemplo
@@ -101,33 +89,6 @@
 │   ├── 📁 bin/                           # 📦 Binários compilados
 │   └── 📁 obj/                           # 🔧 Arquivos temporários
 │
-├── 📁 Sistemaws.Function/                 # ☁️ Azure Functions (API Principal)
-│   ├── 📄 Program.cs                     # Configuração das Functions
-│   ├── 📄 Sistemaws.Function.csproj      # Arquivo de projeto
-│   ├── 📄 Dockerfile                     # Configuração Docker
-│   ├── 📄 host.json                      # Configuração do host Azure Functions
-│   ├── 📄 local.settings.json           # Configurações locais
-│   ├── 📄 appsettings.json               # Configurações da aplicação
-│   ├── 📄 README.md                      # Documentação das Functions
-│   │
-│   ├── 📁 Functions/                     # 🔧 Azure Functions (Endpoints)
-│   │   ├── 📄 AuthenticateFunction.cs    # Function de autenticação
-│   │   ├── 📄 CreateUserFunction.cs      # Function de criação de usuário
-│   │   ├── 📄 GetUsersFunction.cs        # Function de listagem de usuários
-│   │   └── 📄 GetUserByIdFunction.cs     # Function de busca por ID
-│   │
-│   ├── 📁 Middleware/                    # 🛡️ Middleware de Autenticação
-│   │   └── 📄 JwtAuthenticationMiddleware.cs # Middleware JWT
-│   │
-│   ├── 📁 Properties/                    # ⚙️ Configurações
-│   │   ├── 📄 launchSettings.json        # Configurações de execução
-│   │   └── 📄 local.settings.json        # Configurações locais
-│   │
-│   ├── 📁 bin/                           # 📦 Binários compilados
-│   │   └── 📁 Debug/                     # Versão de debug
-│   │       └── 📁 output/                # Saída de build
-│   │
-│   └── 📁 obj/                           # 🔧 Arquivos temporários
 │
 ├── 📁 Sistemaws.Infrastructure/           # 🔧 Camada de Infraestrutura
 │   ├── 📄 Sistemaws.Infrastructure.csproj # Arquivo de projeto
@@ -178,11 +139,10 @@
     │   ├── 📄 UserResponseTests.cs       # Testes do DTO de resposta
     │   └── 📄 DomainExceptionTests.cs    # Testes de exceções
     │
-    ├── 📁 Functions/                      # 🧪 Testes das Azure Functions
-    │   ├── 📄 AuthenticateFunctionTests.cs # Testes da function de auth
-    │   ├── 📄 CreateUserFunctionTests.cs  # Testes da function de criação
-    │   ├── 📄 GetUsersFunctionTests.cs    # Testes da function de listagem
-    │   └── 📄 GetUserByIdFunctionTests.cs # Testes da function de busca
+    ├── 📁 WebApi/                         # 🧪 Testes da Web API
+    │   ├── 📄 AuthControllerTests.cs      # Testes do controller de auth
+    │   ├── 📄 UsersControllerTests.cs     # Testes do controller de usuários
+    │   └── 📄 TestControllerTests.cs      # Testes do controller de teste
     │
     ├── 📁 TestHelpers/                    # 🛠️ Helpers para Testes
     │   ├── 📄 TestDataBuilder.cs         # Builder de dados de teste
@@ -210,17 +170,12 @@
 - **Arquivos Principais**: Repositories, Services, DbContext
 - **Responsabilidade**: Como o sistema faz (implementação)
 
-### **4. ☁️ Function (Azure Functions)**
-- **Propósito**: Endpoints HTTP serverless
-- **Arquivos Principais**: Functions, Middleware
+### **4. 🌐 WebApi (ASP.NET Core Web API)**
+- **Propósito**: Endpoints HTTP tradicionais com Controllers
+- **Arquivos Principais**: Controllers, Program.cs, Swagger
 - **Responsabilidade**: Interface HTTP da API
 
-### **5. 🎯 Sistemaws (API Tradicional)**
-- **Propósito**: API tradicional .NET Core (alternativa)
-- **Arquivos Principais**: Controllers, Program.cs
-- **Responsabilidade**: Interface HTTP alternativa
-
-### **6. 🧪 Test (Testes)**
+### **5. 🧪 Test (Testes)**
 - **Propósito**: Testes unitários e de integração
 - **Arquivos Principais**: Testes por camada
 - **Responsabilidade**: Garantir qualidade do código
@@ -228,23 +183,24 @@
 ## 🔄 Fluxo de Dados
 
 ```
-Frontend → Azure Functions → Application → Domain ← Infrastructure → Database
-    ↓           ↓              ↓           ↓           ↓
-   HTTP      Middleware    Commands/    Entities    Repositories
-  Request    (Auth JWT)    Queries      (Rules)     (EF Core)
+Frontend → Web API → Application → Domain ← Infrastructure → Database
+    ↓         ↓          ↓           ↓           ↓
+   HTTP    Controllers Commands/    Entities    Repositories
+  Request  (Auth JWT)   Queries     (Rules)     (EF Core)
 ```
 
 ## 📊 Estatísticas do Projeto
 
-- **Total de Projetos**: 6 (.csproj)
-- **Total de Camadas**: 6 (Domain, Application, Infrastructure, Function, API, Test)
-- **Total de Functions**: 4 (Authenticate, CreateUser, GetUsers, GetUserById)
+- **Total de Projetos**: 5 (.csproj)
+- **Total de Camadas**: 5 (Domain, Application, Infrastructure, WebApi, Test)
+- **Total de Controllers**: 3 (Auth, Users, Test)
 - **Total de Commands**: 4 (Authenticate, CreateUser, Login, LoginWithToken)
 - **Total de Queries**: 2 (GetAllUsers, GetUserById)
 - **Total de Handlers**: 6 (um para cada command/query)
 - **Total de Validators**: 2 (CreateUser, Login)
 - **Total de Repositories**: 2 (Base, User)
-- **Total de Services**: 3 (Authentication, JWT, JwtToken)
+- **Total de Services**: 4 (Authentication, JWT, DatabaseInitialization, Token)
 - **Total de DTOs**: 5 (Requests e Responses)
 - **Total de Entities**: 2 (BaseEntity, User)
 - **Total de Testes**: ~20 arquivos de teste
+- **Banco de Dados**: 1 único (UniSystem)

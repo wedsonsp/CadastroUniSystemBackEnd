@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sistemaws.Domain", "Sistema
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sistemaws.Test", "Sistemaws.Test\Sistemaws.Test.csproj", "{44B875FA-1493-4BFD-B01C-B042B4A91D32}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sistemaws.Function", "Sistemaws.Function\Sistemaws.Function.csproj", "{6B9B077B-082C-4E23-BB6E-BCEB8AFFEE69}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sistemaws.WebApi", "Sistemaws.WebApi\Sistemaws.WebApi.csproj", "{7C8B188C-193D-4F5A-9B7C-8D9E0F1A2B3C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,10 +35,10 @@ Global
 		{44B875FA-1493-4BFD-B01C-B042B4A91D32}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{44B875FA-1493-4BFD-B01C-B042B4A91D32}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{44B875FA-1493-4BFD-B01C-B042B4A91D32}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6B9B077B-082C-4E23-BB6E-BCEB8AFFEE69}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6B9B077B-082C-4E23-BB6E-BCEB8AFFEE69}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6B9B077B-082C-4E23-BB6E-BCEB8AFFEE69}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6B9B077B-082C-4E23-BB6E-BCEB8AFFEE69}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7C8B188C-193D-4F5A-9B7C-8D9E0F1A2B3C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C8B188C-193D-4F5A-9B7C-8D9E0F1A2B3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7C8B188C-193D-4F5A-9B7C-8D9E0F1A2B3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7C8B188C-193D-4F5A-9B7C-8D9E0F1A2B3C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
