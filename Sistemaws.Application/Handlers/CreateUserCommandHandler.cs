@@ -60,6 +60,23 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, UserR
         // Hash da senha
         var (passwordHash, salt) = await _authenticationService.HashPasswordAsync(request.Password);
 
+        // Determinar se o usuário será administrador
+        bool isAdministrator;
+        if (!hasUsers)
+        {
+            // Primeiro usuário sempre é administrador
+            isAdministrator = true;
+        }
+        else
+        {
+            // Usuários subsequentes só podem ser administradores se o token for de um admin
+            // e o campo IsAdministrator for true
+            isAdministrator = request.IsAdministrator;
+        }
+
+        // Log para debug
+        Console.WriteLine($"DEBUG: hasUsers={hasUsers}, request.IsAdministrator={request.IsAdministrator}, final isAdministrator={isAdministrator}");
+
         // Criar usuário
         var user = new User
         {
@@ -69,7 +86,7 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, UserR
             Salt = salt,
             CreatedAt = DateTime.UtcNow,
             IsActive = true,
-            IsAdministrator = !hasUsers // Primeiro usuário é administrador
+            IsAdministrator = isAdministrator
         };
 
         var createdUser = await _userRepository.CreateAsync(user);

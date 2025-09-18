@@ -53,6 +53,7 @@ public class CreateUserFunction
                 Name = createUserRequest.Name,
                 Email = createUserRequest.Email,
                 Password = createUserRequest.Password,
+                IsAdministrator = createUserRequest.IsAdministrator,
                 Token = token
             };
 
