@@ -1,4 +1,4 @@
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -20,9 +20,9 @@ public class Startup : FunctionsStartup
     public override void Configure(IFunctionsHostBuilder builder)
     {
         // JWT Authentication
-        var jwtKey = Environment.GetEnvironmentVariable("Jwt__Key") ?? "YourSuperSecretKeyThatIsAtLeast32CharactersLong!";
-        var jwtIssuer = Environment.GetEnvironmentVariable("Jwt__Issuer") ?? "Sistemaws";
-        var jwtAudience = Environment.GetEnvironmentVariable("Jwt__Audience") ?? "SistemawsUsers";
+        var jwtKey = Environment.GetEnvironmentVariable("Jwt:Key") ?? "YourSuperSecretKeyThatIsAtLeast32CharactersLong!";
+        var jwtIssuer = Environment.GetEnvironmentVariable("Jwt:Issuer") ?? "Sistemaws";
+        var jwtAudience = Environment.GetEnvironmentVariable("Jwt:Audience") ?? "SistemawsUsers";
 
         builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
