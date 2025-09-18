@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.EntityFrameworkCore;
 using System.Text;
 using Sistemaws.Application;
 using Sistemaws.Infrastructure;
@@ -112,8 +113,8 @@ using (var scope = app.Services.CreateScope())
         var context = scope.ServiceProvider.GetRequiredService<Sistemaws.Infrastructure.Persistence.SistemawsDbContext>();
         var dbInitializer = scope.ServiceProvider.GetRequiredService<Sistemaws.Infrastructure.Services.DatabaseInitializationService>();
         
-        // Ensure database is created
-        await context.Database.EnsureCreatedAsync();
+        // Ensure database is created and migrations are applied
+        await context.Database.MigrateAsync();
         
         // Initialize with default admin user
         await dbInitializer.InitializeAsync();

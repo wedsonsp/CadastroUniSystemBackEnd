@@ -25,6 +25,7 @@ public static class ServiceCollectionExtensions
 
         // Repositories
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();
 
         // Services
         services.AddScoped<IAuthenticationService, AuthenticationService>();

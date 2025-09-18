@@ -27,7 +27,8 @@ public class JwtTokenService : ITokenService
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new Claim(ClaimTypes.Email, user.Email),
             new Claim(ClaimTypes.Name, user.Name),
-            new Claim("userId", user.Id.ToString())
+            new Claim("userId", user.Id.ToString()),
+            new Claim("isAdministrator", user.IsAdministrator.ToString())
         };
 
         var token = new JwtSecurityToken(
