@@ -5,12 +5,25 @@ using Microsoft.OpenApi.Models;
 using Sistemaws.Application;
 using Sistemaws.Infrastructure;
 using Sistemaws.Infrastructure.Persistence;
+using Sistemaws.Infrastructure.Services;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
+
+// Add CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins("http://localhost:4200")
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
+    });
+});
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -82,16 +95,28 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+// Use CORS
+app.UseCors("AllowFrontend");
+
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
 
-// Ensure database is created
+
+
+// Ensure database is created and initialize with default admin
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<SistemawsDbContext>();
+    var dbInitializer = scope.ServiceProvider.GetRequiredService<DatabaseInitializationService>();
+    
     context.Database.EnsureCreated();
+    dbInitializer.InitializeAsync().Wait();
 }
 
+// Configure fixed port for API
+app.Urls.Add("http://localhost:7201");
+
 app.Run();
+

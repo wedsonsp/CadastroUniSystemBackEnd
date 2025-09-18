@@ -1,10 +1,12 @@
 using System.Net;
-using Microsoft.Azure.Functions.Worker;
-using Microsoft.Azure.Functions.Worker.Http;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MediatR;
 using Sistemaws.Application.Queries;
 using System.Text.Json;
+using Microsoft.Azure.WebJobs;
+using Microsoft.Azure.WebJobs.Extensions.Http;
 
 namespace Sistemaws.Function;
 
@@ -19,36 +21,27 @@ public class GetUsersFunction
         _logger = logger;
     }
 
-    [Function("GetUsers")]
-    public async Task<HttpResponseData> GetUsers(
-        [HttpTrigger(AuthorizationLevel.Function, "get", Route = "users")] HttpRequestData req)
+    [FunctionName("GetUsers")]
+    public async Task<IActionResult> GetUsers(
+        [HttpTrigger(AuthorizationLevel.Function, "get", Route = "users")] HttpRequest req)
     {
         try
         {
             var query = new GetAllUsersQuery();
             var result = await _mediator.Send(query);
 
-            var response = req.CreateResponse(HttpStatusCode.OK);
-            response.Headers.Add("Content-Type", "application/json");
-            await response.WriteStringAsync(JsonSerializer.Serialize(result, new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-            }));
-
-            return response;
+            return new OkObjectResult(result);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Unexpected error during users retrieval");
-            var errorResponse = req.CreateResponse(HttpStatusCode.InternalServerError);
-            await errorResponse.WriteStringAsync("Internal server error");
-            return errorResponse;
+            return new StatusCodeResult(500);
         }
     }
 
-    [Function("GetUserById")]
-    public async Task<HttpResponseData> GetUserById(
-        [HttpTrigger(AuthorizationLevel.Function, "get", Route = "users/{id}")] HttpRequestData req,
+    [FunctionName("GetUserById")]
+    public async Task<IActionResult> GetUserById(
+        [HttpTrigger(AuthorizationLevel.Function, "get", Route = "users/{id}")] HttpRequest req,
         int id)
     {
         try
@@ -58,26 +51,15 @@ public class GetUsersFunction
 
             if (result == null)
             {
-                var notFoundResponse = req.CreateResponse(HttpStatusCode.NotFound);
-                await notFoundResponse.WriteStringAsync("User not found");
-                return notFoundResponse;
+                return new NotFoundObjectResult("User not found");
             }
 
-            var response = req.CreateResponse(HttpStatusCode.OK);
-            response.Headers.Add("Content-Type", "application/json");
-            await response.WriteStringAsync(JsonSerializer.Serialize(result, new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-            }));
-
-            return response;
+            return new OkObjectResult(result);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Unexpected error during user retrieval by ID");
-            var errorResponse = req.CreateResponse(HttpStatusCode.InternalServerError);
-            await errorResponse.WriteStringAsync("Internal server error");
-            return errorResponse;
+            return new StatusCodeResult(500);
         }
     }
 }

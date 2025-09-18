@@ -1,6 +1,0 @@
-@Sistemaws_HostAddress = http://localhost:5007
-
-GET {{Sistemaws_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

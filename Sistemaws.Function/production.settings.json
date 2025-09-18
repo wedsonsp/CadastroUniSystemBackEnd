@@ -1,0 +1,17 @@
+{
+    "IsEncrypted": false,
+    "Values": {
+        "AzureWebJobsStorage": "DefaultEndpointsProtocol=https;AccountName=YOUR_STORAGE_ACCOUNT;AccountKey=YOUR_STORAGE_KEY;EndpointSuffix=core.windows.net",
+        "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
+        "ConnectionStrings:DefaultConnection": "Server=MARCCIELO\\SQLEXPRESS;Database=UniSystem;Integrated Security=True;MultipleActiveResultSets=true;TrustServerCertificate=True",
+        "Jwt:Key": "YourSuperSecretProductionKeyThatIsAtLeast32CharactersLongAndVerySecure!",
+        "Jwt:Issuer": "Sistemaws-Production",
+        "Jwt:Audience": "SistemawsUsers-Production"
+    },
+    "Host": {
+        "CORS": "https://yourdomain.com",
+        "CORSCredentials": true
+    }
+}
+
+

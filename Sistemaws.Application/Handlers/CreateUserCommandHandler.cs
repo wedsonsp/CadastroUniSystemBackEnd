@@ -23,18 +23,30 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, UserR
 
     public async Task<UserResponse> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
-        // Validar token de administrador
-        var tokenValidation = _jwtService.ValidateToken(request.Token);
+        // Verificar se há usuários no banco
+        var hasUsers = await _userRepository.CountAsync() > 0;
         
-        if (!tokenValidation.IsValid)
+        if (hasUsers)
         {
-            throw new DomainException("Invalid token");
-        }
+            // Se há usuários, validar token de administrador
+            if (string.IsNullOrEmpty(request.Token))
+            {
+                throw new DomainException("Token is required when there are existing users");
+            }
+            
+            var tokenValidation = _jwtService.ValidateToken(request.Token);
+            
+            if (!tokenValidation.IsValid)
+            {
+                throw new DomainException("Invalid token");
+            }
 
-        if (!tokenValidation.IsAdministrator)
-        {
-            throw new DomainException("Only administrators can create users");
+            if (!tokenValidation.IsAdministrator)
+            {
+                throw new DomainException("Only administrators can create users");
+            }
         }
+        // Se não há usuários, permitir criação sem token (primeiro usuário)
 
         // Verificar se o email já existe
         if (await _userRepository.EmailExistsAsync(request.Email))
@@ -57,7 +69,7 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, UserR
             Salt = salt,
             CreatedAt = DateTime.UtcNow,
             IsActive = true,
-            IsAdministrator = false // Novos usuários não são administradores por padrão
+            IsAdministrator = !hasUsers // Primeiro usuário é administrador
         };
 
         var createdUser = await _userRepository.CreateAsync(user);

@@ -25,7 +25,8 @@ public class GetAllUsersQueryHandler : IRequestHandler<GetAllUsersQuery, IEnumer
             Email = user.Email,
             CreatedAt = user.CreatedAt ?? DateTime.UtcNow,
             UpdatedAt = user.UpdatedAt,
-            IsActive = user.IsActive
+            IsActive = user.IsActive,
+            IsAdministrator = user.IsAdministrator
         });
     }
 }

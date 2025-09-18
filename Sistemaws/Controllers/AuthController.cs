@@ -1,8 +1,7 @@
-using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using MediatR;
 using Sistemaws.Application.Commands;
 using Sistemaws.Domain.DTOs;
-using Sistemaws.Domain.Exceptions;
 
 namespace Sistemaws.Controllers;
 
@@ -11,39 +10,38 @@ namespace Sistemaws.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly IMediator _mediator;
-    private readonly ILogger<AuthController> _logger;
 
-    public AuthController(IMediator mediator, ILogger<AuthController> logger)
+    public AuthController(IMediator mediator)
     {
         _mediator = mediator;
-        _logger = logger;
     }
 
-    /// <summary>
-    /// Autentica um usuário e retorna um token JWT
-    /// </summary>
-    [HttpPost("login")]
-    public async Task<ActionResult<LoginResponse>> Login([FromBody] LoginRequest request)
+    [HttpPost("authenticate")]
+    public async Task<IActionResult> Authenticate([FromBody] AuthenticateCommand command)
     {
         try
         {
-            var command = new LoginCommand
-            {
-                Email = request.Email,
-                Password = request.Password
-            };
-
             var result = await _mediator.Send(command);
             return Ok(result);
         }
-        catch (DomainException ex)
+        catch (Exception ex)
         {
-            return BadRequest(ex.Errors);
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+
+    [HttpPost("login-with-token")]
+    public async Task<IActionResult> LoginWithToken([FromBody] LoginWithTokenRequest request)
+    {
+        try
+        {
+            var command = new LoginWithTokenCommand { Token = request.Token };
+            var result = await _mediator.Send(command);
+            return Ok(result);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro ao autenticar usuário");
-            return StatusCode(500, "Erro interno do servidor");
+            return BadRequest(new { message = ex.Message });
         }
     }
 }

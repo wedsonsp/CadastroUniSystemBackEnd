@@ -28,7 +28,8 @@ public class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, UserRes
             Email = user.Email,
             CreatedAt = user.CreatedAt ?? DateTime.UtcNow,
             UpdatedAt = user.UpdatedAt,
-            IsActive = user.IsActive
+            IsActive = user.IsActive,
+            IsAdministrator = user.IsAdministrator
         };
     }
 }

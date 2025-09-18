@@ -19,7 +19,9 @@ public static class ServiceCollectionExtensions
                 sqlOptions => sqlOptions.EnableRetryOnFailure(
                     maxRetryCount: 3,
                     maxRetryDelay: TimeSpan.FromSeconds(30),
-                    errorNumbersToAdd: null)));
+                    errorNumbersToAdd: null))
+                .EnableSensitiveDataLogging()
+                .EnableDetailedErrors());
 
         // Repositories
         services.AddScoped<IUserRepository, UserRepository>();
@@ -28,6 +30,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IAuthenticationService, AuthenticationService>();
         services.AddScoped<ITokenService, JwtTokenService>();
         services.AddScoped<IJwtService, JwtService>();
+        services.AddScoped<DatabaseInitializationService>();
 
         return services;
     }

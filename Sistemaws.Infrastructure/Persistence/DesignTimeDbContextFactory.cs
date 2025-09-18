@@ -9,7 +9,7 @@ public class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<SistemawsD
     {
         var optionsBuilder = new DbContextOptionsBuilder<SistemawsDbContext>();
         
-        // String de conexão hardcoded para tempo de design
+        // String de conexão hardcoded para tempo de design (usando banco de produção)
         var connectionString = "Server=MARCCIELO\\SQLEXPRESS;Database=UniSystem;Integrated Security=True;MultipleActiveResultSets=true;TrustServerCertificate=True";
         
         optionsBuilder.UseSqlServer(connectionString);
@@ -17,3 +17,4 @@ public class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<SistemawsD
         return new SistemawsDbContext(optionsBuilder.Options);
     }
 }
+
